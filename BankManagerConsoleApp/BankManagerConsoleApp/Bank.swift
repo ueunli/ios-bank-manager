@@ -9,12 +9,14 @@ import Foundation
 
 struct Bank {
     private let queue: Queue<String>
-    private let clerks: [BankClerk]
+    private let clerksYeahGuem: [BankClerk]
+    private let clerksDaeChul: [BankClerkDaeChul]
     private var numberOfCustomers: Int = 0
     
     init() {
         self.queue = Queue<String>()
-        self.clerks = [BankClerk()]
+        self.clerksYeahGuem = [BankClerk(),BankClerk()]
+        self.clerksDaeChul = [BankClerkDaeChul()]
     }
     
     mutating func receive(numberOfCustomers: Int) {
@@ -35,10 +37,27 @@ struct Bank {
     }
     
     func handleAllCustomers() {
-        while !queue.isEmpty() {
+        let tasks = DispatchGroup()
+        let task1 = DispatchWorkItem {
             guard let customer = distributeCustomersToClerk() else { return }
-            clerks[0].serve(customer: customer)
+            clerksYeahGuem[0].serve(customer: customer)
         }
+        let task2 = DispatchWorkItem {
+            guard let customer = distributeCustomersToClerk() else { return }
+            clerksYeahGuem[1].serve(customer: customer)
+        }
+        let task3 = DispatchWorkItem {
+            guard let customer = distributeCustomersToClerk() else { return }
+            clerksDaeChul[0].serve(customer: customer)
+        }
+
+        while !queue.isEmpty() {
+            DispatchQueue.global().async(group: tasks, execute: task1)
+            DispatchQueue.global().async(group: tasks, execute: task2)
+            DispatchQueue.global().async(group: tasks, execute: task3)
+        }
+        tasks.wait()
+        
         let totalTime = calculateTotalTime()
         BankManager.closingMessage(totalNumberOfCustomers: numberOfCustomers, totalTime: totalTime)
     }
