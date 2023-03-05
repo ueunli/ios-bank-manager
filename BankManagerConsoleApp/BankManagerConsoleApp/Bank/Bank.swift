@@ -9,17 +9,15 @@ import Foundation
 
 struct Bank {
     private let queue: Queue<String>
-    private let clerksForDeposit: [BankClerkForDeposit]
-    private let clerksForLoan: [BankClerkForLoan]
-    private var numberOfCustomers: Int
+    private let clerks: [BankClerkProtocol]
+    private let numberOfCustomers: Int
     private let rangeOfNumberOfCustomers = (minimum: 10, maximum: 30)
     private var timer: Timer
     private let semaphore = DispatchSemaphore(value: 1)
     
-    init(numberOfClerksForDeposit: Int, numberOfClerksForLoan: Int) {
+    init(clerks: BankingService...) {
         self.queue = Queue<String>()
-        self.clerksForDeposit = Array(repeating: BankClerkForDeposit(), count: numberOfClerksForDeposit)
-        self.clerksForLoan = Array(repeating: BankClerkForLoan(), count: numberOfClerksForLoan)
+        self.clerks = Array(clerksPerType: clerks)
         self.numberOfCustomers = Int.random(in: rangeOfNumberOfCustomers.minimum...rangeOfNumberOfCustomers.maximum)
         self.timer = Timer()
     }
@@ -45,10 +43,8 @@ struct Bank {
     
     private func makeWorkGroup() -> DispatchGroup {
         let group = DispatchGroup()
-        var workItems = [DispatchWorkItem]()
         
-        workItems.append(contentsOf: clerksForDeposit.actionMap(makeWorkItem))
-        workItems.append(contentsOf: clerksForLoan.actionMap(makeWorkItem))
+        let workItems = clerks.map(makeWorkItem)
         workItems.forEach {
             DispatchQueue.global().async(group: group, execute: $0)
         }
@@ -56,7 +52,7 @@ struct Bank {
         return group
     }
     
-    private func makeWorkItem(by clerk: BankClerkProtocol, at index: Int = 0) -> DispatchWorkItem {
+    private func makeWorkItem(by clerk: BankClerkProtocol) -> DispatchWorkItem {
         let workItem = DispatchWorkItem {
             while !queue.isEmpty() {
                 guard (queue.peekFirst() as? Customer)?.purposeOfVisit == clerk.service else { continue }
