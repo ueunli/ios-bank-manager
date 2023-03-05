@@ -28,7 +28,7 @@ struct ServiceAsynchronizer {
                 guard (queue.peekFirst() as? Customer)?.purposeOfVisit == clerk.service else { continue }
                 
                 semaphore.wait()
-                guard let customer = extractCustomer(from: queue) else { semaphore.signal(); return }
+                guard let customer = extractCustomerfromQueue() else { semaphore.signal(); return }
                 semaphore.signal()
                 
                 clerk.serve(customer)
@@ -37,7 +37,7 @@ struct ServiceAsynchronizer {
         return workItem
     }
     
-    private func extractCustomer(from queue: Queue<String>) -> Customer? {
+    private func extractCustomerfromQueue() -> Customer? {
         let customer = queue.dequeue() as? Customer
         return customer
     }
