@@ -14,6 +14,7 @@
 		3BC82CBA29A47E6D00D0B86A /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BAAE6229A455A9006D578A /* Node.swift */; };
 		3BC82CBF29A735D400D0B86A /* Bank.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC82CBE29A735D400D0B86A /* Bank.swift */; };
 		3BC82CCC29B1880C00D0B86A /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC82CCB29B1880C00D0B86A /* Timer.swift */; };
+		3BC82CCE29B444DA00D0B86A /* ServiceAsynchronizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC82CCD29B444DA00D0B86A /* ServiceAsynchronizer.swift */; };
 		8745838B29B18C98002813F4 /* ArrayExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8745838A29B18C98002813F4 /* ArrayExtension.swift */; };
 		876A7DF629A7335700D26878 /* BankClerk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876A7DF529A7335700D26878 /* BankClerk.swift */; };
 		87BAAE6329A455A9006D578A /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BAAE6229A455A9006D578A /* Node.swift */; };
@@ -46,6 +47,7 @@
 		3BC82CB229A47E2B00D0B86A /* BankManagerConsoleAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankManagerConsoleAppTests.swift; sourceTree = "<group>"; };
 		3BC82CBE29A735D400D0B86A /* Bank.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bank.swift; sourceTree = "<group>"; };
 		3BC82CCB29B1880C00D0B86A /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
+		3BC82CCD29B444DA00D0B86A /* ServiceAsynchronizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceAsynchronizer.swift; sourceTree = "<group>"; };
 		8745838A29B18C98002813F4 /* ArrayExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayExtension.swift; sourceTree = "<group>"; };
 		876A7DF529A7335700D26878 /* BankClerk.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankClerk.swift; sourceTree = "<group>"; };
 		87BAAE6229A455A9006D578A /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				876A7DF529A7335700D26878 /* BankClerk.swift */,
 				3BC82CBE29A735D400D0B86A /* Bank.swift */,
 				87D41D4A29B03A82000291F6 /* BankingService.swift */,
+				3BC82CCD29B444DA00D0B86A /* ServiceAsynchronizer.swift */,
 			);
 			path = Bank;
 			sourceTree = "<group>";
@@ -271,6 +274,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BC82CAB29A45E5A00D0B86A /* Queue.swift in Sources */,
+				3BC82CCE29B444DA00D0B86A /* ServiceAsynchronizer.swift in Sources */,
 				876A7DF629A7335700D26878 /* BankClerk.swift in Sources */,
 				87BAAE6329A455A9006D578A /* Node.swift in Sources */,
 				3BC82CCC29B1880C00D0B86A /* Timer.swift in Sources */,
