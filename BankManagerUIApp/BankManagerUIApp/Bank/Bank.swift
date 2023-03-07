@@ -9,7 +9,7 @@ import Foundation
 
 struct Bank {
     private let clerks: [BankClerkProtocol]
-    private let customers: Queue<String>
+    private(set) var customers: Queue<String>
     private var numberOfCustomers: Int
     private let rangeOfNumberOfCustomers = (minimum: 10, maximum: 30)
     private var timer: Timer
@@ -29,7 +29,7 @@ struct Bank {
         timer.finish()
     }
     
-    private func lineUpCustomersInQueue() {
+    func lineUpCustomersInQueue() {
         (1...numberOfCustomers).forEach {
             let customer = Customer("\($0)번 고객")
             customers.enqueue(customer)

@@ -8,6 +8,8 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    private var bank = Bank(clerks: .deposit(2), .loan(1))
+    
     private var timerLabel: UILabel = {
         let label = UILabel()
         
@@ -123,6 +125,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         addSubView()
         configureLayout()
+        bank.lineUpCustomersInQueue()
     }
     
     private func addSubView() {
@@ -181,12 +184,16 @@ class ViewController: UIViewController {
     }
     
     @objc private func addTenCustomersInQueueButtonTapped() {
-        print("addTenCustomersInQueueButtonTapped")
-        let label = UILabel()
-        label.text = "연습용"
-        label.textAlignment = .center
-        label.font = UIFont(name: label.font.fontName, size: 40)
-        waitingStackView.addArrangedSubview(label)
+        let customerQueue = bank.customers.elements
+        var customerHead = customerQueue.head
+        
+        for _ in 1...customerQueue.nodeCount {
+            let label = UILabel()
+            guard let labelText = customerHead?.data else { return }
+            label.text = labelText
+            waitingStackView.addArrangedSubview(label)
+            customerHead = customerHead?.nextNode
+        }
     }
     
     @objc private func resetCustomersInQueueButtonTapped() {
