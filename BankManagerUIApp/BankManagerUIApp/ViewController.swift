@@ -59,7 +59,7 @@ class ViewController: UIViewController {
         let stackView = UIStackView()
         
         stackView.alignment = .fill
-        stackView.distribution = .fill
+        stackView.distribution = .fillEqually
         stackView.spacing = 0
         stackView.axis = .horizontal
         
@@ -70,7 +70,7 @@ class ViewController: UIViewController {
         let stackView = UIStackView()
         
         stackView.alignment = .fill
-        stackView.distribution = .fill
+        stackView.distribution = .fillEqually
         stackView.spacing = 0
         stackView.axis = .horizontal
         
@@ -81,7 +81,7 @@ class ViewController: UIViewController {
         let stackView = UIStackView()
         
         stackView.alignment = .fill
-        stackView.distribution = .fill
+        stackView.distribution = .fillEqually
         stackView.spacing = 0
         stackView.axis = .vertical
         
@@ -90,7 +90,24 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        addSubView()
+    }
+    
+    private func addSubView() {
+        view.addSubview(headerStackView)
+        headerStackView.addArrangedSubview(buttonStackView)
+        headerStackView.addArrangedSubview(workingLabel)
+        headerStackView.addArrangedSubview(statusLabelStackView)
+        
+        buttonStackView.addArrangedSubview(addTenCustomersInQueueButton)
+        buttonStackView.addArrangedSubview(resetCustomersInQueueButton)
+        
+        statusLabelStackView.addArrangedSubview(waitingLabel)
+        statusLabelStackView.addArrangedSubview(workingLabel)
+    }
+    
+    private func configureLayout() {
+        
     }
     
     @objc private func addTenCustomersInQueueButtonTapped() {
