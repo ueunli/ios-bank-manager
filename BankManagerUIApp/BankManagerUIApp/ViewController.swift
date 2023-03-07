@@ -88,6 +88,39 @@ class ViewController: UIViewController {
         return stackView
     }()
     
+    private var waitingStackView: UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.alignment = .fill
+        stackView.distribution = .fillEqually
+        stackView.spacing = 0
+        stackView.axis = .vertical
+        
+        return stackView
+    }()
+    
+    private var workingStackView: UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.alignment = .fill
+        stackView.distribution = .fillEqually
+        stackView.spacing = 0
+        stackView.axis = .vertical
+        
+        return stackView
+    }()
+    
+    private var customerStackView: UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.alignment = .fill
+        stackView.distribution = .fillEqually
+        stackView.spacing = 0
+        stackView.axis = .horizontal
+        
+        return stackView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         addSubView()
@@ -96,9 +129,14 @@ class ViewController: UIViewController {
     
     private func addSubView() {
         view.addSubview(headerStackView)
+        view.addSubview(customerStackView)
+        
         headerStackView.addArrangedSubview(buttonStackView)
         headerStackView.addArrangedSubview(timerLabel)
         headerStackView.addArrangedSubview(statusLabelStackView)
+        
+        customerStackView.addArrangedSubview(waitingStackView)
+        customerStackView.addArrangedSubview(workingStackView)
         
         buttonStackView.addArrangedSubview(addTenCustomersInQueueButton)
         buttonStackView.addArrangedSubview(resetCustomersInQueueButton)
@@ -117,10 +155,22 @@ class ViewController: UIViewController {
             headerStackView.topAnchor.constraint(equalTo: safeArea.topAnchor),
             headerStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -500)
                 ])
+        
+        customerStackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            customerStackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
+            customerStackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
+            customerStackView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor),
+                ])
     }
     
     @objc private func addTenCustomersInQueueButtonTapped() {
         print("addTenCustomersInQueueButtonTapped")
+        let label = UILabel()
+        label.text = "연습용"
+        label.textAlignment = .center
+        waitingStackView.addArrangedSubview(label)
+        
     }
     
     @objc private func resetCustomersInQueueButtonTapped() {
