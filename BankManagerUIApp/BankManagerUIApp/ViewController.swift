@@ -39,7 +39,7 @@ class ViewController: UIViewController {
         return label
     }()
     
-    private var addTenCustomersInQueueButton: UIButton = {
+    private lazy var addTenCustomersInQueueButton: UIButton = {
         let button = UIButton(type: .system)
         
         button.setTitle("고객 10명 추가", for: .normal)
@@ -48,7 +48,7 @@ class ViewController: UIViewController {
         return button
     }()
     
-    private var resetCustomersInQueueButton: UIButton = {
+    private lazy var resetCustomersInQueueButton: UIButton = {
         let button = UIButton()
         
         button.setTitle("초기화", for: .normal)
