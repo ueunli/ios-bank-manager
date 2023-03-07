@@ -108,6 +108,17 @@ class ViewController: UIViewController {
         return stackView
     }()
     
+    private var workingStackView: UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.alignment = .fill
+        stackView.distribution = .fillEqually
+        stackView.spacing = 0
+        stackView.axis = .vertical
+        
+        return stackView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         addSubView()
@@ -117,6 +128,7 @@ class ViewController: UIViewController {
     private func addSubView() {
         view.addSubview(headerStackView)
         view.addSubview(scrollView)
+        view.addSubview(workingStackView)
         
         headerStackView.addArrangedSubview(buttonStackView)
         headerStackView.addArrangedSubview(timerLabel)
@@ -158,6 +170,14 @@ class ViewController: UIViewController {
             waitingStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             waitingStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
+        
+        workingStackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            workingStackView.leadingAnchor.constraint(equalTo: workingLabel.leadingAnchor),
+            workingStackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
+            workingStackView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor),
+            workingStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor )
+        ])
     }
     
     @objc private func addTenCustomersInQueueButtonTapped() {
@@ -171,7 +191,8 @@ class ViewController: UIViewController {
     
     @objc private func resetCustomersInQueueButtonTapped() {
         print("resetCustomersInQueueButtonTapped")
-        
+        waitingStackView.subviews.forEach { $0.removeFromSuperview() }
+        workingStackView.subviews.forEach { $0.removeFromSuperview() }
     }
 }
 
