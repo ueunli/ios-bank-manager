@@ -40,7 +40,8 @@ class ViewController: UIViewController {
     private var addTenCustomersInQueueButton: UIButton = {
         let button = UIButton(type: .system)
         
-        button.titleLabel?.text = "고객 10명 추가"
+        button.setTitle("고객 10명 추가", for: .normal)
+        button.setTitleColor(.blue, for: .normal)
         button.addTarget(self, action: #selector(addTenCustomersInQueueButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -48,7 +49,8 @@ class ViewController: UIViewController {
     private var resetCustomersInQueueButton: UIButton = {
         let button = UIButton()
         
-        button.titleLabel?.text = "초기화"
+        button.setTitle("초기화", for: .normal)
+        button.setTitleColor(.red, for: .normal)
         button.addTarget(self, action: #selector(resetCustomersInQueueButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -115,8 +117,6 @@ class ViewController: UIViewController {
             headerStackView.topAnchor.constraint(equalTo: safeArea.topAnchor),
             headerStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -500)
                 ])
-
-
     }
     
     @objc private func addTenCustomersInQueueButtonTapped() {
