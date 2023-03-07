@@ -88,6 +88,15 @@ class ViewController: UIViewController {
         return stackView
     }()
     
+    private var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.backgroundColor = .white
+        scrollView.showsVerticalScrollIndicator = false
+        
+        return scrollView
+    }()
+    
     private var waitingStackView: UIStackView = {
         let stackView = UIStackView()
         
@@ -95,28 +104,6 @@ class ViewController: UIViewController {
         stackView.distribution = .fillEqually
         stackView.spacing = 0
         stackView.axis = .vertical
-        
-        return stackView
-    }()
-    
-    private var workingStackView: UIStackView = {
-        let stackView = UIStackView()
-        
-        stackView.alignment = .fill
-        stackView.distribution = .fillEqually
-        stackView.spacing = 0
-        stackView.axis = .vertical
-        
-        return stackView
-    }()
-    
-    private var customerStackView: UIStackView = {
-        let stackView = UIStackView()
-        
-        stackView.alignment = .fill
-        stackView.distribution = .fillEqually
-        stackView.spacing = 0
-        stackView.axis = .horizontal
         
         return stackView
     }()
@@ -129,14 +116,13 @@ class ViewController: UIViewController {
     
     private func addSubView() {
         view.addSubview(headerStackView)
-        view.addSubview(customerStackView)
+        view.addSubview(scrollView)
         
         headerStackView.addArrangedSubview(buttonStackView)
         headerStackView.addArrangedSubview(timerLabel)
         headerStackView.addArrangedSubview(statusLabelStackView)
         
-        customerStackView.addArrangedSubview(waitingStackView)
-        customerStackView.addArrangedSubview(workingStackView)
+        scrollView.addSubview(waitingStackView)
         
         buttonStackView.addArrangedSubview(addTenCustomersInQueueButton)
         buttonStackView.addArrangedSubview(resetCustomersInQueueButton)
@@ -154,14 +140,24 @@ class ViewController: UIViewController {
             headerStackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
             headerStackView.topAnchor.constraint(equalTo: safeArea.topAnchor),
             headerStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -500)
-                ])
+        ])
         
-        customerStackView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            customerStackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
-            customerStackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
-            customerStackView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor),
-                ])
+            scrollView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: waitingLabel.trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor )
+        ])
+        
+        waitingStackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            waitingStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            waitingStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            waitingStackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            waitingStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            waitingStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
     }
     
     @objc private func addTenCustomersInQueueButtonTapped() {
@@ -169,13 +165,13 @@ class ViewController: UIViewController {
         let label = UILabel()
         label.text = "연습용"
         label.textAlignment = .center
+        label.font = UIFont(name: label.font.fontName, size: 40)
         waitingStackView.addArrangedSubview(label)
-        
     }
     
     @objc private func resetCustomersInQueueButtonTapped() {
         print("resetCustomersInQueueButtonTapped")
-
+        
     }
 }
 
