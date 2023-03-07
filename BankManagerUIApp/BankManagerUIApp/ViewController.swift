@@ -38,11 +38,10 @@ class ViewController: UIViewController {
     }()
     
     private var addTenCustomersInQueueButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         
         button.titleLabel?.text = "고객 10명 추가"
-        button.addTarget(ViewController.self, action: #selector(addTenCustomersInQueueButtonTapped), for: .touchUpInside)
-        button.titleLabel?.textColor = .blue
+        button.addTarget(self, action: #selector(addTenCustomersInQueueButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -50,8 +49,7 @@ class ViewController: UIViewController {
         let button = UIButton()
         
         button.titleLabel?.text = "초기화"
-        button.addTarget(ViewController.self, action: #selector(resetCustomersInQueueButtonTapped), for: .touchUpInside)
-        button.titleLabel?.textColor = .red
+        button.addTarget(self, action: #selector(resetCustomersInQueueButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -91,12 +89,13 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         addSubView()
+        configureLayout()
     }
     
     private func addSubView() {
         view.addSubview(headerStackView)
         headerStackView.addArrangedSubview(buttonStackView)
-        headerStackView.addArrangedSubview(workingLabel)
+        headerStackView.addArrangedSubview(timerLabel)
         headerStackView.addArrangedSubview(statusLabelStackView)
         
         buttonStackView.addArrangedSubview(addTenCustomersInQueueButton)
@@ -107,15 +106,26 @@ class ViewController: UIViewController {
     }
     
     private func configureLayout() {
+        let safeArea = view.safeAreaLayoutGuide
         
+        headerStackView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            headerStackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor),
+            headerStackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
+            headerStackView.topAnchor.constraint(equalTo: safeArea.topAnchor),
+            headerStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -500)
+                ])
+
+
     }
     
     @objc private func addTenCustomersInQueueButtonTapped() {
-        
+        print("addTenCustomersInQueueButtonTapped")
     }
     
     @objc private func resetCustomersInQueueButtonTapped() {
-        
+        print("resetCustomersInQueueButtonTapped")
+
     }
 }
 
