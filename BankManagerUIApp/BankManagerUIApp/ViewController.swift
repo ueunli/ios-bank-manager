@@ -125,7 +125,27 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         addSubView()
         configureLayout()
-        bank.lineUpCustomersInQueue()
+        NotificationCenter.default.addObserver(self, selector: #selector(addLabelInWorkingStackView), name: NSNotification.Name("WorkStartNotification"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteLabelFromWorkingStackView), name: NSNotification.Name("WorkFinishedNotification"), object: nil)
+    }
+    
+    @objc func addLabelInWorkingStackView(_ notification: NSNotification) {
+        DispatchQueue.main.async {
+            let label = UILabel()
+            label.text = "\(notification.userInfo!["고객정보"]!)"
+            self.workingStackView.addArrangedSubview(label)
+        }
+    }
+    
+    @objc func deleteLabelFromWorkingStackView(_ notification: NSNotification) {
+        DispatchQueue.main.async {
+            let workingStackViewSubViews = self.workingStackView.arrangedSubviews
+            let subview = workingStackViewSubViews.filter { subview in
+                guard let subview = subview as? UILabel else { return false }
+                return subview.text == "\(notification.userInfo!["고객정보"]!)"
+            }
+            subview[0].removeFromSuperview()
+        }
     }
     
     private func addSubView() {
@@ -179,14 +199,13 @@ class ViewController: UIViewController {
             workingStackView.leadingAnchor.constraint(equalTo: workingLabel.leadingAnchor),
             workingStackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor),
             workingStackView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor),
-            workingStackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor )
         ])
     }
     
     @objc private func addTenCustomersInQueueButtonTapped() {
+        bank.lineUpCustomersInQueue()
         let customerQueue = bank.customers.elements
         var customerHead = customerQueue.head
-        
         for _ in 1...customerQueue.nodeCount {
             let label = UILabel()
             guard let labelText = customerHead?.data else { return }
@@ -194,6 +213,7 @@ class ViewController: UIViewController {
             waitingStackView.addArrangedSubview(label)
             customerHead = customerHead?.nextNode
         }
+        bank.handleAllCustomers()
     }
     
     @objc private func resetCustomersInQueueButtonTapped() {

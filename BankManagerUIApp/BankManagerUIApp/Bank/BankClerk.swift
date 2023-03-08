@@ -15,9 +15,11 @@ protocol BankClerkProtocol {
 extension BankClerkProtocol {
     func serve(_ customer: Customer) {
         guard let purposeOfVisit = customer.purposeOfVisit else { return }
-        print("\(customer.data) \(purposeOfVisit.title) 업무 시작")
+        let customerInfo = "\(customer.data)" + "-" + "\(purposeOfVisit.title)"
+        NotificationCenter.default.post(name: NSNotification.Name("WorkStartNotification"),
+                                        object: nil,
+                                        userInfo: ["고객정보" : customerInfo])
         Thread.sleep(forTimeInterval: purposeOfVisit.timeSpent)
-        print("\(customer.data) \(purposeOfVisit.title) 업무 완료")
     }
 }
 

@@ -35,10 +35,10 @@ struct Bank {
             customers.enqueue(customer)
         }
     }
-
-    private func handleAllCustomers() {
+    
+    func handleAllCustomers() {
         let works = makeWorkGroup()
-        works.wait()
+        //        works.wait()
     }
     
     private func makeWorkGroup() -> DispatchGroup {
@@ -48,7 +48,7 @@ struct Bank {
         workItems.forEach {
             DispatchQueue.global().async(group: group, execute: $0)
         }
-
+        
         return group
     }
     
@@ -62,6 +62,11 @@ struct Bank {
                 semaphore.signal()
                 
                 clerk.serve(customer)
+                guard let purposeOfVisit = customer.purposeOfVisit else { return }
+                let customerInfo = "\(customer.data)" + "-" + "\(purposeOfVisit.title)"
+                NotificationCenter.default.post(name: NSNotification.Name("WorkFinishedNotification"),
+                                                object: nil,
+                                                userInfo: ["고객정보" : customerInfo])
             }
         }
         return workItem
