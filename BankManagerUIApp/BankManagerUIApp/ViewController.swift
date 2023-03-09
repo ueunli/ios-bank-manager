@@ -180,8 +180,19 @@ class ViewController: UIViewController {
         ])
     }
     
+    // TODO: bank가 일하고 있는 지 확인하여 분기처리 -> 그냥 append VS 작업 시작
     @objc private func addTenCustomersInQueueButtonTapped() {
         bank.addMoreCustomers()
+        // TODO: 함수로 빼기
+        let queue = bank.customers.elements
+        var head = queue.head
+        for _ in 1...queue.nodeCount {
+            let label = Customerlabel()
+            label.setCustomer(head as! Customer)
+            label.text = label.customer?.data
+            waitingCustomersStackView.addArrangedSubview(label)
+            head = head?.nextNode
+        }
         bank.handleAllCustomers()
     }
     

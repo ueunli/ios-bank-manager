@@ -9,7 +9,7 @@ import Foundation
 
 struct Bank {
     private let clerks: [BankClerkProtocol]
-    private let customers: Queue<String>
+    private(set) var customers: Queue<String>
     private var numberOfCustomers: Int = 0 {
         didSet {
             lineUpCustomersInQueue(oldValue + 1 ... numberOfCustomers)
@@ -36,8 +36,7 @@ struct Bank {
             customers.enqueue(customer)
         }
     }
-
-    func handleAllCustomers() {
+        func handleAllCustomers() {
         let serviceManager = ServiceAsynchronizer(queue: customers)
         let works = serviceManager.makeWorkGroup(by: clerks)
         works.wait()
