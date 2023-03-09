@@ -124,6 +124,38 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         addSubView()
         configureUI()
+        NotificationCenter.default.addObserver(self, selector: #selector(workStart), name: Notification.Name("WorkStart"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(workFinished), name: Notification.Name("WorkFinished"), object: nil)
+    }
+    
+    @objc func workStart(_ notification: Notification) {
+        DispatchQueue.main.async {
+            let customerInfo = notification.userInfo?["고객"]
+            let customer = customerInfo as! Customer
+            let label = Customerlabel(customer: customer)
+            label.text = label.customer.data
+            self.workingCustomersStackView.addArrangedSubview(label)
+            print("workingCustomerStackView에 넣었다!")
+            let subviews = self.waitingCustomersStackView.arrangedSubviews.filter { UIView in
+                // customerLabel.customer로 비교할 수는 없을까?...
+                let label = UIView as? UILabel
+                return label?.text == customer.data
+            }
+            subviews[0].removeFromSuperview()
+        }
+    }
+    
+    @objc func workFinished(_ notification: Notification) {
+        DispatchQueue.main.async {
+            let customerInfo = notification.userInfo?["고객"]
+            let customer = customerInfo as! Customer
+            let subviews = self.workingCustomersStackView.arrangedSubviews.filter { UIView in
+                // customerLabel.customer로 비교할 수는 없을까?...
+                let label = UIView as? UILabel
+                return label?.text == customer.data
+            }
+            subviews[0].removeFromSuperview()
+        }
     }
     
     private func addSubView() {
@@ -187,9 +219,8 @@ class ViewController: UIViewController {
         let queue = bank.customers.elements
         var head = queue.head
         for _ in 1...queue.nodeCount {
-            let label = Customerlabel()
-            label.setCustomer(head as! Customer)
-            label.text = label.customer?.data
+            let label = Customerlabel(customer: head as! Customer)
+            label.text = label.customer.data
             waitingCustomersStackView.addArrangedSubview(label)
             head = head?.nextNode
         }

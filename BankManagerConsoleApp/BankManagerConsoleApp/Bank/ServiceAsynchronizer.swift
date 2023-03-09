@@ -18,13 +18,11 @@ struct ServiceAsynchronizer {
         self.semaphore = DispatchSemaphore(value: semaphoreValue)
     }
     
-    func makeWorkGroup(by clerks: [BankClerkProtocol]) -> DispatchGroup {
+    func work(by clerks: [BankClerkProtocol]) {
         let workItems = clerks.map(makeWorkItem)
         workItems.forEach {
             thread.async(group: group, execute: $0)
         }
-        
-        return group
     }
     
     private func makeWorkItem(by clerk: BankClerkProtocol) -> DispatchWorkItem {
@@ -36,7 +34,9 @@ struct ServiceAsynchronizer {
                 guard let customer = queue.dequeue() else { semaphore.signal(); return }
                 semaphore.signal()
                 
+                NotificationCenter.default.post(name: Notification.Name("WorkStart"), object: nil, userInfo: ["고객": customer])
                 clerk.serve(customer as! Customer)
+                NotificationCenter.default.post(name: Notification.Name("WorkFinished"), object: nil, userInfo: ["고객": customer])
             }
         }
         return workItem

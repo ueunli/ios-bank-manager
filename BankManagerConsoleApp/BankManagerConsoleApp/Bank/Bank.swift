@@ -36,10 +36,10 @@ struct Bank {
             customers.enqueue(customer)
         }
     }
-        func handleAllCustomers() {
+    
+    func handleAllCustomers() {
         let serviceManager = ServiceAsynchronizer(queue: customers)
-        let works = serviceManager.makeWorkGroup(by: clerks)
-        works.wait()
+        serviceManager.work(by: clerks)
     }
     
     mutating func close() {
