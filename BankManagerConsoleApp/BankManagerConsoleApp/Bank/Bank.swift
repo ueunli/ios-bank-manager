@@ -10,33 +10,34 @@ import Foundation
 struct Bank {
     private let clerks: [BankClerkProtocol]
     private let customers: Queue<String>
-    private var numberOfCustomers: Int
-    private let rangeOfNumberOfCustomers = (minimum: 10, maximum: 30)
+    private var numberOfCustomers: Int = 0 {
+        didSet {
+            lineUpCustomersInQueue(oldValue + 1 ... numberOfCustomers)
+        }
+    }
     private var timer: Timer
-    private let semaphore = DispatchSemaphore(value: 1)
     
     init(clerks: BankingService...) {
         self.customers = Queue<String>()
         self.clerks = Array(clerksPerType: clerks)
-        self.numberOfCustomers = Int.random(in: rangeOfNumberOfCustomers.minimum...rangeOfNumberOfCustomers.maximum)
         self.timer = Timer()
     }
     
     mutating func open() {
         timer.start()
-        lineUpCustomersInQueue()
+        lineUpCustomersInQueue(0...0)
         handleAllCustomers()
         timer.finish()
     }
     
-    private func lineUpCustomersInQueue() {
-        (1...numberOfCustomers).forEach {
-            let customer = Customer("\($0)번 고객")
+    private func lineUpCustomersInQueue(_ range: ClosedRange<Int>) {
+        range.forEach {
+            let customer = Customer(number: $0)
             customers.enqueue(customer)
         }
     }
 
-    private func handleAllCustomers() {
+    func handleAllCustomers() {
         let serviceManager = ServiceAsynchronizer(queue: customers)
         let works = serviceManager.makeWorkGroup(by: clerks)
         works.wait()
@@ -49,5 +50,9 @@ struct Bank {
     
     private func printClosingMessage(with totalSpentTime: Double) {
         print("업무가 마감되었습니다. 오늘 업무를 처리한 고객은 총 \(numberOfCustomers)명이며, 총 업무시간은 \(totalSpentTime)초입니다.")
+    }
+    
+    mutating func addMoreCustomers(_ count: Int = 10) {
+        numberOfCustomers += count
     }
 }

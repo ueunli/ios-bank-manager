@@ -7,6 +7,7 @@
 import UIKit
 
 class ViewController: UIViewController {
+    private var bank = Bank(clerks: .deposit(2), .loan(1))
     
     private var timerLabel: UILabel = {
         let label = UILabel()
@@ -180,7 +181,8 @@ class ViewController: UIViewController {
     }
     
     @objc private func addTenCustomersInQueueButtonTapped() {
-        
+        bank.addMoreCustomers()
+        bank.handleAllCustomers()
     }
     
     @objc private func resetCustomersInQueueButtonTapped() {
