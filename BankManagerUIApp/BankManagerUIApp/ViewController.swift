@@ -6,8 +6,31 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+protocol BankClerkDelegate {
+    func addLabel(of customer: Customer)
+    func removeLabel(of customer: Customer)
+}
+
+class ViewController: UIViewController, BankClerkDelegate {
+    func addLabel(of customer: Customer) {
+        let label = Customerlabel()
+        label.setCustomer(customer)
+        workingCustomersStackView.addArrangedSubview(label)
+    }
+    
+    func removeLabel(of customer: Customer) {
+        let label = workingCustomersStackView.arrangedSubviews.first { ($0 as? Customerlabel)?.customer == customer }
+        label?.removeFromSuperview()
+    }
+    
     private var bank = Bank(clerks: .deposit(2), .loan(1))
+    private var customerLabels: [Customerlabel] {
+        let array = Array(repeating: Customerlabel(), count: 3)
+        //array[0].customer =
+    }
+    private let computer = ServiceAsynchronizer(queue: .init())
+    private var processingCustomers: [Int: Customer?] { computer.progressing }
+    private var labels: [Customerlabel] { computer.progressing.values.map { let label = Customerlabel(); label.setCustomer($0); return label } }
     
     private var timerLabel: UILabel = {
         let label = UILabel()
@@ -124,6 +147,24 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         addSubView()
         configureUI()
+        bank.clerks[0].delegate = self
+        bank.clerks[1].delegate = self
+        bank.clerks[2].delegate = self
+        NotificationCenter.default.addObserver(self, selector: #selector(addLabelInWorkingStackView), name: .started, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteLabelFromWorkingStackView), name: .finished, object: nil)
+    }
+    
+    @objc private func addLabelInWorkingStackView(_ noti: Notification) {
+        let label = Customerlabel()
+        label.setCustomer(noti.userInfo?["고객정보"] as? Node<String>)
+        workingCustomersStackView.addArrangedSubview(label)
+    }
+    
+    @objc private func deleteLabelFromWorkingStackView(_ noti: Notification) {
+//        workingCustomersStackView.arrangedSubviews.first {
+//            (noti.userInfo?["고객정보"] as? Customer)?.number == ($0 as? Customerlabel)?.customer?.number
+//        }?.removeFromSuperview()
+        computer.progressing[(noti.userInfo?["고객정보"] as! Customer).number] = nil
     }
     
     private func addSubView() {
@@ -184,16 +225,17 @@ class ViewController: UIViewController {
     @objc private func addTenCustomersInQueueButtonTapped() {
         bank.addMoreCustomers()
         // TODO: 함수로 빼기
-        let queue = bank.customers.elements
-        var head = queue.head
-        for _ in 1...queue.nodeCount {
-            let label = Customerlabel()
-            label.setCustomer(head as! Customer)
-            label.text = label.customer?.data
-            waitingCustomersStackView.addArrangedSubview(label)
-            head = head?.nextNode
+//        let queue = bank.customers.elements
+//        var head = queue.head
+//        for _ in 1...queue.nodeCount {
+//            let label = Customerlabel()
+//            label.setCustomer(head)
+//            waitingCustomersStackView.addArrangedSubview(label)
+//            head = head?.nextNode
+//        }
+        if bank.customers.isEmpty() {
+            bank.handleAllCustomers()
         }
-        bank.handleAllCustomers()
     }
     
     @objc private func resetCustomersInQueueButtonTapped() {
@@ -201,3 +243,7 @@ class ViewController: UIViewController {
     }
 }
 
+extension Notification.Name {
+    static var started = Notification.Name("업무시작")
+    static var finished = Notification.Name("업무완료")
+}
