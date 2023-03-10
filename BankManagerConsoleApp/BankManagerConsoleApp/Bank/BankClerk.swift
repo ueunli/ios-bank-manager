@@ -8,7 +8,8 @@
 import Foundation
 
 protocol BankClerkProtocol {
-    static var queue: Queue<String> { get }
+    var isWorking: Bool { get set }
+    //var queue: DispatchQueue { get }
     var service: BankingService { get }
     func serve(_ customer: Customer)
 }
@@ -21,11 +22,13 @@ extension BankClerkProtocol {
 }
 
 struct BankClerkForDeposit: BankClerkProtocol {
-    static var queue = Queue<String>()
+    var isWorking = false
+    //var queue = DispatchQueue.global()
     let service: BankingService = .deposit()
 }
 
 struct BankClerkForLoan: BankClerkProtocol {
-    static var queue = Queue<String>()
+    var isWorking = false
+    //var queue = DispatchQueue.global()
     let service: BankingService = .loan()
 }

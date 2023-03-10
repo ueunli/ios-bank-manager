@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct Bank {
-    private let clerks: [BankClerkProtocol]
+class Bank {
+    private var clerks: [BankClerkProtocol]
     private(set) var customers: Queue<String>
     private var numberOfCustomers: Int = 0 {
         didSet {
@@ -23,7 +23,7 @@ struct Bank {
         self.timer = Timer()
     }
     
-    mutating func open() {
+    func open() {
         timer.start()
         lineUpCustomersInQueue(0...0)
         handleAllCustomers()
@@ -39,11 +39,11 @@ struct Bank {
     }
     
     func handleAllCustomers() {
-        let serviceManager = ServiceAsynchronizer(queue: customers)
+        var serviceManager = ServiceAsynchronizer(queue: customers)
         serviceManager.work(by: clerks)
     }
     
-    mutating func close() {
+    func close() {
         let totalSpentTime = timer.totalTime()
         printClosingMessage(with: totalSpentTime)
     }
@@ -52,7 +52,7 @@ struct Bank {
         print("업무가 마감되었습니다. 오늘 업무를 처리한 고객은 총 \(numberOfCustomers)명이며, 총 업무시간은 \(totalSpentTime)초입니다.")
     }
     
-    mutating func addMoreCustomers(_ count: Int = 10) {
+    func addMoreCustomers(_ count: Int = 10) {
         numberOfCustomers += count
     }
 }
