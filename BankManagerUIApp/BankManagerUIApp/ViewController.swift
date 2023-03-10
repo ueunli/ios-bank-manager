@@ -135,13 +135,12 @@ class ViewController: UIViewController {
             let label = Customerlabel(customer: customer)
             label.text = label.customer.data
             self.workingCustomersStackView.addArrangedSubview(label)
-            print("workingCustomerStackView에 넣었다!")
-            let subviews = self.waitingCustomersStackView.arrangedSubviews.filter { UIView in
+            let subview = self.waitingCustomersStackView.arrangedSubviews.first { UIView in
                 // customerLabel.customer로 비교할 수는 없을까?...
                 let label = UIView as? UILabel
                 return label?.text == customer.data
             }
-            subviews[0].removeFromSuperview()
+            subview?.removeFromSuperview()
         }
     }
     
@@ -149,12 +148,12 @@ class ViewController: UIViewController {
         DispatchQueue.main.async {
             let customerInfo = notification.userInfo?["고객"]
             let customer = customerInfo as! Customer
-            let subviews = self.workingCustomersStackView.arrangedSubviews.filter { UIView in
+            let subview = self.workingCustomersStackView.arrangedSubviews.first { UIView in
                 // customerLabel.customer로 비교할 수는 없을까?...
                 let label = UIView as? UILabel
                 return label?.text == customer.data
             }
-            subviews[0].removeFromSuperview()
+            subview?.removeFromSuperview()
         }
     }
     
