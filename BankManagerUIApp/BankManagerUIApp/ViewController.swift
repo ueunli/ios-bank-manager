@@ -223,12 +223,37 @@ class ViewController: UIViewController {
     
     // TODO: bank가 일하고 있는 지 확인하여 분기처리 -> 그냥 append VS 작업 시작
     @objc private func addTenCustomersInQueueButtonTapped() {
-        if bank.customers.isEmpty() {
+        if bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
             bank.addMoreCustomers()
-            bank.handleAllCustomers()
+            bank.handleLoanCustomers()
+            bank.handleDepositCustomers()
+        } else if !bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
+            bank.addMoreCustomers()
+            bank.handleDepositCustomers()
+        } else if bank.loanCustomers.isEmpty() && !bank.depositCustomers.isEmpty() {
+            bank.addMoreCustomers()
+            bank.handleLoanCustomers()
         } else {
             bank.addMoreCustomers()
         }
+//        bank.addMoreCustomers()
+//        if bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
+//            bank.handleLoanCustomers()
+//            bank.handleDepositCustomers()
+//        } else if !bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
+//
+//        }
+
+        
+//        if bank.loanCustomers.isEmpty() {
+//
+//        }
+//        if bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
+//            bank.addMoreCustomers()
+//            bank.handleAllCustomers()
+//        } else {
+//            bank.addMoreCustomers()
+//        }
 //        bank.addMoreCustomers()
 //        guard !bank.customers.isEmpty() else { return print("뭔데!")}
 //        bank.handleAllCustomers()

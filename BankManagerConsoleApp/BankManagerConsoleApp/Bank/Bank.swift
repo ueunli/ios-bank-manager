@@ -8,8 +8,10 @@
 import Foundation
 
 struct Bank {
-    private let clerks: [BankClerkProtocol]
-    private(set) var customers: Queue<String>
+    private let despositClerks: [BankClerkProtocol]
+    private let loanClerks : [BankClerkProtocol]
+    private(set) var depositCustomers: Queue<String>
+    private(set) var loanCustomers: Queue<String>
     private var numberOfCustomers: Int = 0 {
         didSet {
             lineUpCustomersInQueue(oldValue + 1 ... numberOfCustomers)
@@ -18,29 +20,52 @@ struct Bank {
     private var timer: Timer
     
     init(clerks: BankingService...) {
-        self.customers = Queue<String>()
-        self.clerks = Array(clerksPerType: clerks)
+        self.depositCustomers = Queue<String>()
+        self.loanCustomers = Queue<String>()
+        self.despositClerks = Array(clerksPerType: clerks).filter { $0.service == .deposit()}
+        self.loanClerks = Array(clerksPerType: clerks).filter { $0.service == .loan()}
         self.timer = Timer()
     }
     
     mutating func open() {
         timer.start()
         lineUpCustomersInQueue(0...0)
-        handleAllCustomers()
+//        handleAllCustomers()
         timer.finish()
     }
     
     private func lineUpCustomersInQueue(_ range: ClosedRange<Int>) {
         range.forEach {
             let customer = Customer(number: $0)
-            customers.enqueue(customer)
+            switch customer.purpose! {
+            case .deposit(_):
+                depositCustomers.enqueue(customer)
+            case .loan(_):
+                loanCustomers.enqueue(customer)
+            }
             NotificationCenter.default.post(name: Notification.Name("AddCustomerdInWaitingStackView"), object: nil, userInfo: ["고객": customer])
         }
     }
     
-    func handleAllCustomers() {
-        let serviceManager = ServiceAsynchronizer(queue: customers)
-        serviceManager.work(by: clerks)
+//    func handleAllCustomers() {
+//        let depositServiceManager = DepositServiceAsynchronizer(queue: depositCustomers)
+//        let loanServiceManager = LoanServiceAsychronizer(queue: loanCustomers)
+//
+//        depositServiceManager.work(by: despositClerks)
+//        loanServiceManager.work(by: loanClerks)
+////        let serviceManager = ServiceAsynchronizer(depositQueue: depositCustomers, loanQueue: loanCustomers)
+//
+////        serviceManager.work(by: clerks)
+//    }
+    
+    func handleDepositCustomers() {
+        let depositServiceManager = DepositServiceAsynchronizer(queue: depositCustomers)
+        depositServiceManager.work(by: despositClerks)
+    }
+    
+    func handleLoanCustomers() {
+        let loanServiceManager = LoanServiceAsychronizer(queue: loanCustomers)
+        loanServiceManager.work(by: loanClerks)
     }
     
     mutating func close() {
