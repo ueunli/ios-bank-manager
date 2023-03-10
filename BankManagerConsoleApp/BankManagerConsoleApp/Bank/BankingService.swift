@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum BankingService: CaseIterable, Equatable {
+enum BankingService: CaseIterable, Hashable {
     static var allCases: [BankingService] = [deposit(), loan()]
     
     case deposit(Int = 0)

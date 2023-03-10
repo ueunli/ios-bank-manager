@@ -8,13 +8,16 @@
 import Foundation
 
 struct ServiceAsynchronizer {
-    private let queue: Queue<String>
+    private let queues = [BankingService: Queue<String>]()
     private var group = DispatchGroup()
     private let thread = DispatchQueue.global()
     private let semaphore: DispatchSemaphore
     
     init(queue: Queue<String>, semaphoreValue: Int = 1) {
-        self.queue = queue
+        while !queue.isEmpty() {
+            guard let customer = queue.dequeue() as? Customer else { continue }
+            queues[customer.purpose!]?.enqueue(customer)
+        }
         self.semaphore = DispatchSemaphore(value: semaphoreValue)
     }
     
@@ -27,14 +30,14 @@ struct ServiceAsynchronizer {
     
     private func makeWorkItem(by clerk: BankClerkProtocol) -> DispatchWorkItem {
         let workItem = DispatchWorkItem {
+            let queue = queues[clerk.service]!
             while !queue.isEmpty() {
                 semaphore.wait()
-                guard (queue.peekFirst() as? Customer)?.purpose == clerk.service else { semaphore.signal(); continue }
-                guard let customer = queue.dequeue() else { semaphore.signal(); return }
+                guard let customer = queue.dequeue() as? Customer else { semaphore.signal(); return }
                 semaphore.signal()
                 
                 NotificationCenter.default.post(name: Notification.Name("WorkStart"), object: nil, userInfo: ["고객": customer])
-                clerk.serve(customer as! Customer)
+                clerk.serve(customer)
                 NotificationCenter.default.post(name: Notification.Name("WorkFinished"), object: nil, userInfo: ["고객": customer])
             }
         }
