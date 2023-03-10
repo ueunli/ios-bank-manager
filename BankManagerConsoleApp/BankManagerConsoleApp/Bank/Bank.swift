@@ -34,6 +34,7 @@ struct Bank {
         range.forEach {
             let customer = Customer(number: $0)
             customers.enqueue(customer)
+            NotificationCenter.default.post(name: Notification.Name("AddCustomerdInWaitingStackView"), object: nil, userInfo: ["고객": customer])
         }
     }
     

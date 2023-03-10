@@ -33,8 +33,8 @@ struct ServiceAsynchronizer {
                 semaphore.wait()
                 guard let customer = queue.dequeue() else { semaphore.signal(); return }
                 semaphore.signal()
-                
                 NotificationCenter.default.post(name: Notification.Name("WorkStart"), object: nil, userInfo: ["고객": customer])
+                
                 clerk.serve(customer as! Customer)
                 NotificationCenter.default.post(name: Notification.Name("WorkFinished"), object: nil, userInfo: ["고객": customer])
             }
