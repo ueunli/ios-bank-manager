@@ -129,44 +129,6 @@ class ViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(workFinished), name: Notification.Name("WorkFinished"), object: nil)
     }
     
-    @objc func addCustomerInWaitingStackView(_ notification: Notification) {
-        DispatchQueue.main.async {
-            let customerInfo = notification.userInfo?["고객"]
-            let customer = customerInfo as! Customer
-            let label = Customerlabel(customer: customer)
-            self.waitingCustomersStackView.addArrangedSubview(label)
-        }
-    }
-    
-    @objc func workStart(_ notification: Notification) {
-        DispatchQueue.main.async {
-            let customerInfo = notification.userInfo?["고객"]
-            let customer = customerInfo as! Customer
-            let label = Customerlabel(customer: customer)
-            self.workingCustomersStackView.addArrangedSubview(label)
-            let subview = self.waitingCustomersStackView.arrangedSubviews.first { UIView in
-                // customerLabel.customer로 비교할 수는 없을까?...
-                let label = UIView as? UILabel
-                return label?.text == customer.data
-            }
-            subview?.removeFromSuperview()
-        }
-    }
-    
-    
-    @objc func workFinished(_ notification: Notification) {
-        DispatchQueue.main.async {
-            let customerInfo = notification.userInfo?["고객"]
-            let customer = customerInfo as! Customer
-            let subview = self.workingCustomersStackView.arrangedSubviews.first { UIView in
-                // customerLabel.customer로 비교할 수는 없을까?...
-                let label = UIView as? UILabel
-                return label?.text == customer.data
-            }
-            subview?.removeFromSuperview()
-        }
-    }
-    
     private func addSubView() {
         view.addSubview(headerStackView)
         view.addSubview(scrollView)
@@ -221,7 +183,7 @@ class ViewController: UIViewController {
         ])
     }
     
-    // TODO: bank가 일하고 있는 지 확인하여 분기처리 -> 그냥 append VS 작업 시작
+    // TODO: 뭔가 분기처리를 깔끔하게 해보기
     @objc private func addTenCustomersInQueueButtonTapped() {
         if bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
             bank.addMoreCustomers()
@@ -236,52 +198,56 @@ class ViewController: UIViewController {
         } else {
             bank.addMoreCustomers()
         }
-//        bank.addMoreCustomers()
-//        if bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
-//            bank.handleLoanCustomers()
-//            bank.handleDepositCustomers()
-//        } else if !bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
-//
-//        }
-
-        
-//        if bank.loanCustomers.isEmpty() {
-//
-//        }
-//        if bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
-//            bank.addMoreCustomers()
-//            bank.handleAllCustomers()
-//        } else {
-//            bank.addMoreCustomers()
-//        }
-//        bank.addMoreCustomers()
-//        guard !bank.customers.isEmpty() else { return print("뭔데!")}
-//        bank.handleAllCustomers()
-//        // TODO: 함수로 빼기
-//        let queue = bank.customers.elements
-//        let remainNodeCount = queue.nodeCount - 10
-//        var head = queue.head
-//        if remainNodeCount > 0 {
-//            for _ in 1...remainNodeCount {
-//                head = head?.nextNode
-//            }
-//            for _ in 1...10 {
-//                let label = Customerlabel(customer: head as! Customer)
-//                waitingCustomersStackView.addArrangedSubview(label)
-//                head = head?.nextNode
-//            }
-//        } else {
-//            for _ in 1...10 {
-//                let label = Customerlabel(customer: head as! Customer)
-//                waitingCustomersStackView.addArrangedSubview(label)
-//                head = head?.nextNode
-//            }
-//        }
-        
     }
     
-    @objc private func resetCustomersInQueueButtonTapped() {
-        
+    @objc func addCustomerInWaitingStackView(_ notification: Notification) {
+        DispatchQueue.main.async {
+            let customerInfo = notification.userInfo?["고객"]
+            let customer = customerInfo as! Customer
+            let label = Customerlabel(customer: customer)
+            self.waitingCustomersStackView.addArrangedSubview(label)
+        }
+    }
+
+    
+    @objc func workStart(_ notification: Notification) {
+        guard bank.operationStatus.isOpen else { return }
+        print(#function, bank.operationStatus.isOpen)
+        DispatchQueue.main.async {
+            let customerInfo = notification.userInfo?["고객"]
+            let customer = customerInfo as! Customer
+            let label = Customerlabel(customer: customer)
+            self.workingCustomersStackView.addArrangedSubview(label)
+            let subview = self.waitingCustomersStackView.arrangedSubviews.first { UIView in
+                // customerLabel.customer로 비교할 수는 없을까?...
+                let label = UIView as? UILabel
+                return label?.text == customer.data
+            }
+            subview?.removeFromSuperview()
+        }
+    }
+    
+    @objc func workFinished(_ notification: Notification) {
+        guard bank.operationStatus.isOpen else { return }
+        print(#function, bank.operationStatus.isOpen)
+        DispatchQueue.main.async {
+            let customerInfo = notification.userInfo?["고객"]
+            let customer = customerInfo as! Customer
+            let subview = self.workingCustomersStackView.arrangedSubviews.first { UIView in
+                // customerLabel.customer로 비교할 수는 없을까?...
+                let label = UIView as? UILabel
+                return label?.text == customer.data
+            }
+            subview?.removeFromSuperview()
+        }
+    }
+    
+    @objc func resetCustomersInQueueButtonTapped() {
+        bank.close()
+        print(#function, bank.operationStatus.isOpen)
+        waitingCustomersStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        workingCustomersStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        bank = Bank(clerks: .deposit(2), .loan(1))
     }
 }
 
