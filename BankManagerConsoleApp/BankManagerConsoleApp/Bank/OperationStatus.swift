@@ -8,13 +8,13 @@
 import Foundation
 
 class OperationStatus {
-    private(set) var isOpen: Bool
+    private(set) var isWorking: Bool
     
     init() {
-        self.isOpen = true
+        self.isWorking = true
     }
     
-    func close() {
-        isOpen = false
+    func stop() {
+        isWorking = false
     }
 }

@@ -7,7 +7,7 @@
 import UIKit
 
 class ViewController: UIViewController {
-    private var bank = Bank(clerks: .deposit(2), .loan(1))
+    var bank = Bank(clerks: .deposit(2), .loan(1))
     
     private var timerLabel: UILabel = {
         let label = UILabel()
@@ -124,9 +124,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         addSubView()
         configureUI()
-        NotificationCenter.default.addObserver(self, selector: #selector(addCustomerInWaitingStackView), name: Notification.Name("AddCustomerdInWaitingStackView"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(workStart), name: Notification.Name("WorkStart"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(workFinished), name: Notification.Name("WorkFinished"), object: nil)
+        addNotificationCenter()
     }
     
     private func addSubView() {
@@ -183,6 +181,12 @@ class ViewController: UIViewController {
         ])
     }
     
+    private func addNotificationCenter() {
+        NotificationCenter.default.addObserver(self, selector: #selector(addCustomerInWaitingStackView), name: Notification.Name("AddCustomerdInWaitingStackView"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(workStart), name: Notification.Name("WorkStart"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(workFinished), name: Notification.Name("WorkFinished"), object: nil)
+    }
+    
     // TODO: 뭔가 분기처리를 깔끔하게 해보기
     @objc private func addTenCustomersInQueueButtonTapped() {
         if bank.loanCustomers.isEmpty() && bank.depositCustomers.isEmpty() {
@@ -200,26 +204,22 @@ class ViewController: UIViewController {
         }
     }
     
-    @objc func addCustomerInWaitingStackView(_ notification: Notification) {
+    @objc private func addCustomerInWaitingStackView(_ notification: Notification) {
         DispatchQueue.main.async {
-            let customerInfo = notification.userInfo?["고객"]
-            let customer = customerInfo as! Customer
+            let customer = notification.userInfo?["고객"] as! Customer
             let label = Customerlabel(customer: customer)
             self.waitingCustomersStackView.addArrangedSubview(label)
         }
     }
 
-    
-    @objc func workStart(_ notification: Notification) {
-        guard bank.operationStatus.isOpen else { return }
-        print(#function, bank.operationStatus.isOpen)
+    // TODO: customeLabel을 비교할 수 있는 방법이 있을까?..
+    @objc private func workStart(_ notification: Notification) {
         DispatchQueue.main.async {
             let customerInfo = notification.userInfo?["고객"]
             let customer = customerInfo as! Customer
             let label = Customerlabel(customer: customer)
             self.workingCustomersStackView.addArrangedSubview(label)
             let subview = self.waitingCustomersStackView.arrangedSubviews.first { UIView in
-                // customerLabel.customer로 비교할 수는 없을까?...
                 let label = UIView as? UILabel
                 return label?.text == customer.data
             }
@@ -228,8 +228,6 @@ class ViewController: UIViewController {
     }
     
     @objc func workFinished(_ notification: Notification) {
-        guard bank.operationStatus.isOpen else { return }
-        print(#function, bank.operationStatus.isOpen)
         DispatchQueue.main.async {
             let customerInfo = notification.userInfo?["고객"]
             let customer = customerInfo as! Customer
@@ -244,7 +242,6 @@ class ViewController: UIViewController {
     
     @objc func resetCustomersInQueueButtonTapped() {
         bank.close()
-        print(#function, bank.operationStatus.isOpen)
         waitingCustomersStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         workingCustomersStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         bank = Bank(clerks: .deposit(2), .loan(1))
