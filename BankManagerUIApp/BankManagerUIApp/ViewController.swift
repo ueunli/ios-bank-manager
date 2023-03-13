@@ -7,7 +7,10 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
     private var bank = Bank(clerks: .deposit(2), .loan(1))
+    private var waitingCustomerLabels = [Int: Customerlabel]()
+    private var processingCustomerLabels = [Int: Customerlabel]()
     
     private var timerLabel: UILabel = {
         let label = UILabel()
@@ -131,39 +134,29 @@ class ViewController: UIViewController {
     
     @objc func addCustomerInWaitingStackView(_ notification: Notification) {
         DispatchQueue.main.async {
-            let customerInfo = notification.userInfo?["고객"]
-            let customer = customerInfo as! Customer
+            guard let customer = notification.userInfo?["고객"] as? Customer else { return }
             let label = Customerlabel(customer: customer)
+            self.waitingCustomerLabels.updateValue(label, forKey: customer.number)
             self.waitingCustomersStackView.addArrangedSubview(label)
         }
     }
     
     @objc func workStart(_ notification: Notification) {
         DispatchQueue.main.async {
-            let customerInfo = notification.userInfo?["고객"]
-            let customer = customerInfo as! Customer
-            let label = Customerlabel(customer: customer)
+            guard let customer = notification.userInfo?["고객"] as? Customer else { return }
+            guard let label = self.waitingCustomerLabels.removeValue(forKey: customer.number) else { return }
+            label.removeFromSuperview()
+            self.processingCustomerLabels.updateValue(label, forKey: customer.number)
             self.workingCustomersStackView.addArrangedSubview(label)
-            let subview = self.waitingCustomersStackView.arrangedSubviews.first { UIView in
-                // customerLabel.customer로 비교할 수는 없을까?...
-                let label = UIView as? UILabel
-                return label?.text == customer.data
-            }
-            subview?.removeFromSuperview()
         }
     }
     
-    
     @objc func workFinished(_ notification: Notification) {
         DispatchQueue.main.async {
-            let customerInfo = notification.userInfo?["고객"]
-            let customer = customerInfo as! Customer
-            let subview = self.workingCustomersStackView.arrangedSubviews.first { UIView in
-                // customerLabel.customer로 비교할 수는 없을까?...
-                let label = UIView as? UILabel
-                return label?.text == customer.data
-            }
-            subview?.removeFromSuperview()
+            guard let customer = notification.userInfo?["고객"] as? Customer else { return }
+            guard let label = self.processingCustomerLabels.removeValue(forKey: customer.number) else { return }
+            label.textColor = .lightGray
+            workingCustomersStackView.sendSubviewToBack(label)
         }
     }
     
@@ -223,40 +216,20 @@ class ViewController: UIViewController {
     
     // TODO: bank가 일하고 있는 지 확인하여 분기처리 -> 그냥 append VS 작업 시작
     @objc private func addTenCustomersInQueueButtonTapped() {
-        if bank.customers.isEmpty() {
-            bank.addMoreCustomers()
-            bank.handleAllCustomers()
-        } else {
-            bank.addMoreCustomers()
-        }
-//        bank.addMoreCustomers()
-//        guard !bank.customers.isEmpty() else { return print("뭔데!")}
-//        bank.handleAllCustomers()
-//        // TODO: 함수로 빼기
-//        let queue = bank.customers.elements
-//        let remainNodeCount = queue.nodeCount - 10
-//        var head = queue.head
-//        if remainNodeCount > 0 {
-//            for _ in 1...remainNodeCount {
-//                head = head?.nextNode
-//            }
-//            for _ in 1...10 {
-//                let label = Customerlabel(customer: head as! Customer)
-//                waitingCustomersStackView.addArrangedSubview(label)
-//                head = head?.nextNode
-//            }
-//        } else {
-//            for _ in 1...10 {
-//                let label = Customerlabel(customer: head as! Customer)
-//                waitingCustomersStackView.addArrangedSubview(label)
-//                head = head?.nextNode
-//            }
-//        }
-        
+        //let count = bank.customers.elements.nodeCount
+        bank.addMoreCustomers()
     }
     
     @objc private func resetCustomersInQueueButtonTapped() {
-        
+        bank.customers.clear()
+        waitingCustomerLabels.forEach {
+            waitingCustomersStackView.removeArrangedSubview($1)
+            //self.waitingCustomerLabels.removeValue(forKey: $0)
+        }
+        processingCustomerLabels.forEach {
+            workingCustomersStackView.removeArrangedSubview($1)
+            //self.processingCustomerLabels.removeValue(forKey: $0)
+        }
     }
 }
 

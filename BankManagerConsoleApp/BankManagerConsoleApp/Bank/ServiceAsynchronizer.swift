@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct ServiceAsynchronizer {
-    private var queues = [BankingService: Queue<String>]()
+struct ServiceAsynchronizer<Service: ServiceType, Server: ServerType> {
+    private var queues = [Service: Queue<String>]()
     private var group = DispatchGroup()
     private let thread = DispatchQueue.global()
     private let semaphore: DispatchSemaphore
@@ -17,38 +17,40 @@ struct ServiceAsynchronizer {
         self.semaphore = DispatchSemaphore(value: semaphoreValue)
         setServiceType()
         while !queue.isEmpty() {
-            guard let customer = queue.dequeue() as? Customer else { continue }
-            queues[customer.purpose!]?.enqueue(customer)
+            guard let customer = queue.dequeue() as? Customer<Service> else { continue }
+            guard let service = customer.purpose else { return }
+            queues[service]?.enqueue(customer)
         }
     }
     
-    private mutating func setServiceType(serviceType: any CaseIterable.Type = BankingService.self) {
-        let serviceTypes = serviceType.allCases as! [BankingService]
+    private mutating func setServiceType() {
+        let serviceTypes = Service.allCases
         serviceTypes.forEach { self.queues.updateValue(Queue<String>(), forKey: $0) }
     }
     
-    func work(by clerks: [BankClerkProtocol]) {
-        let workItems = clerks.map {
-            var clerk = $0
-            return makeWorkItem(by:clerk)
-        }
+    func work(by workers: [Server]) {
+        let workItems = workers.map(makeWorkItem)
         workItems.forEach {
             thread.async(execute: $0)
         }
     }
     
-    private func makeWorkItem(by clerk: BankClerkProtocol) -> DispatchWorkItem {
+    private func makeWorkItem(by worker: Server) -> DispatchWorkItem {
         let workItem = DispatchWorkItem {
-            let queue = queues[clerk.service]!
+            guard let service = worker.service as? Service else { return }
+            guard let queue = queues[service] else { return }
+            
             while !queue.isEmpty() {
+                guard !worker.isWorking else { continue }
+                
                 semaphore.wait()
-                guard let customer = queue.dequeue() as? Customer else { semaphore.signal(); return }
+                guard let customer = queue.dequeue() as? Customer<Service> else { semaphore.signal(); return }
                 semaphore.signal()
                 
                 NotificationCenter.default.post(name: Notification.Name("WorkStart"), object: nil, userInfo: ["고객": customer])
-                //clerk.isWorking = true
-                clerk.serve(customer)
-                //clerk.isWorking = false
+                worker.isWorking = true
+                worker.serve(customer)
+                worker.isWorking = false
                 NotificationCenter.default.post(name: Notification.Name("WorkFinished"), object: nil, userInfo: ["고객": customer])
             }
         }

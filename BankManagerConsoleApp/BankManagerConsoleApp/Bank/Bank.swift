@@ -8,11 +8,16 @@
 import Foundation
 
 class Bank {
-    private var clerks: [BankClerkProtocol]
+    private let clerks: [BankClerk]
     private(set) var customers: Queue<String>
     private var numberOfCustomers: Int = 0 {
+        willSet {
+            let isEmpty = customers.isEmpty()
+            NotificationCenter.default.post(name: Notification.Name("AddCustomerdInWaitingStackView"), object: nil, userInfo: ["은행": isEmpty])
+        }
         didSet {
             lineUpCustomersInQueue(oldValue + 1 ... numberOfCustomers)
+            //if oldValue == 0 { handleAllCustomers() }
         }
     }
     private var timer: Timer
@@ -32,14 +37,14 @@ class Bank {
     
     private func lineUpCustomersInQueue(_ range: ClosedRange<Int>) {
         range.forEach {
-            let customer = Customer(number: $0)
+            let customer = Customer<BankingService>(number: $0)
             customers.enqueue(customer)
             NotificationCenter.default.post(name: Notification.Name("AddCustomerdInWaitingStackView"), object: nil, userInfo: ["고객": customer])
         }
     }
     
     func handleAllCustomers() {
-        var serviceManager = ServiceAsynchronizer(queue: customers)
+        let serviceManager = ServiceAsynchronizer<BankingService, BankClerk>(queue: customers)
         serviceManager.work(by: clerks)
     }
     
@@ -53,6 +58,8 @@ class Bank {
     }
     
     func addMoreCustomers(_ count: Int = 10) {
+        let isEmpty = customers.isEmpty()
         numberOfCustomers += count
+        if isEmpty { handleAllCustomers() }
     }
 }

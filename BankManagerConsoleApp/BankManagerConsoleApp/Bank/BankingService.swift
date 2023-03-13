@@ -7,7 +7,26 @@
 
 import Foundation
 
-enum BankingService: CaseIterable, Hashable {
+protocol ServiceType: CaseIterable, Hashable {
+    //associatedtype Server: ServerType
+    //static var serverType: AnyObject. where ServerType { get } //any ServerType.Type { get }
+    var title: String { get }
+    var timeSpent: Double { get }
+}
+
+protocol ServerType: AnyObject {
+    associatedtype Service: ServiceType
+    var isWorking: Bool { get set }
+    var service: Service { get }
+    func serve(_ customer: Customer<Service>)
+}
+
+//protocol Servicable: 
+
+enum BankingService: ServiceType {
+    typealias Server = BankClerk
+    
+    //static var serverType: any ServerType.Type = BankClerk.self
     static var allCases: [BankingService] = [deposit(), loan()]
     
     case deposit(Int = 0)

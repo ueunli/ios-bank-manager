@@ -7,12 +7,14 @@
 
 import Foundation
 
-final class Customer: Node<String> {
-    let purpose: BankingService?
+final class Customer<Service: ServiceType>: Node<String> {
+    let number: Int
+    let purpose: Service?
     
     init(number: Int) {
-        let bankServices = BankingService.allCases
-        self.purpose = bankServices.randomElement()
+        self.number = number
+        let services = Service.allCases
+        self.purpose = services.randomElement()
         let data = "\(number) - \(self.purpose?.title ?? "")"
         super.init(data)
     }
