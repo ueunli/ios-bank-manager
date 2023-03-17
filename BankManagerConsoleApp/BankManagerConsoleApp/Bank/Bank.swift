@@ -15,6 +15,10 @@ struct Bank {
     private var depositServiceManager: DepositServiceAsynchronizer
     private var loanServiceManager: LoanServiceAsychronizer
     private var numberOfCustomers: Int = 0 {
+        willSet {
+            guard depositCustomers.isEmpty() && loanCustomers.isEmpty() else { return }
+            self.numberOfCustomers = 0
+        }
         didSet {
             lineUpCustomersInQueue(oldValue + 1 ... numberOfCustomers)
         }
@@ -54,8 +58,8 @@ struct Bank {
     }
     
     mutating func close() {
-        depositServiceManager.operationStatus.stop()
-        loanServiceManager.operationStatus.stop()
+        depositCustomers.clear()
+        loanCustomers.clear()
     }
     
     mutating func addMoreCustomers(_ count: Int = 10) {

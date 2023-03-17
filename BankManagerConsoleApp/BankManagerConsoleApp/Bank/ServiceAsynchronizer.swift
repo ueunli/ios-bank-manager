@@ -13,7 +13,6 @@ protocol ServiceAsynchronizerProtocol {
     var thread: DispatchQueue { get  }
     var semaphore: DispatchSemaphore { get }
     var workItems: [DispatchWorkItem] { get }
-    var operationStatus: OperationStatus { get }
     
     mutating func work(by clerks: [BankClerkProtocol])
     func makeWorkItem(by clerk: BankClerkProtocol) -> DispatchWorkItem
@@ -25,12 +24,10 @@ struct DepositServiceAsynchronizer: ServiceAsynchronizerProtocol {
     private(set) var thread: DispatchQueue = DispatchQueue.global()
     private(set) var semaphore: DispatchSemaphore
     private(set) var workItems: [DispatchWorkItem] = []
-    private(set) var operationStatus: OperationStatus
 
     init(queue: Queue<String>, semaphoreValue: Int = 1) {
         self.queue = queue
         self.semaphore = DispatchSemaphore(value: semaphoreValue)
-        self.operationStatus = OperationStatus()
     }
         
     mutating internal func work(by clerks: [BankClerkProtocol]) {
@@ -42,7 +39,7 @@ struct DepositServiceAsynchronizer: ServiceAsynchronizerProtocol {
     
     internal func makeWorkItem(by clerk: BankClerkProtocol) -> DispatchWorkItem {
         let work = DispatchWorkItem {
-            while !queue.isEmpty() && operationStatus.isWorking {
+            while !queue.isEmpty() {
                 semaphore.wait()
                 guard let customer = queue.dequeue() else { semaphore.signal(); return }
                 semaphore.signal()
@@ -62,12 +59,10 @@ struct LoanServiceAsychronizer: ServiceAsynchronizerProtocol {
     private(set) var thread: DispatchQueue = DispatchQueue.global()
     private(set) var semaphore: DispatchSemaphore
     private(set) var workItems: [DispatchWorkItem] = []
-    private(set) var operationStatus: OperationStatus
 
     init(queue: Queue<String>, semaphoreValue: Int = 1) {
         self.queue = queue
         self.semaphore = DispatchSemaphore(value: semaphoreValue)
-        self.operationStatus = OperationStatus()
     }
         
     mutating internal func work(by clerks: [BankClerkProtocol]) {
@@ -79,7 +74,7 @@ struct LoanServiceAsychronizer: ServiceAsynchronizerProtocol {
     
     internal func makeWorkItem(by clerk: BankClerkProtocol) -> DispatchWorkItem {
         let work = DispatchWorkItem {
-            while !queue.isEmpty() && operationStatus.isWorking {
+            while !queue.isEmpty() {
                 semaphore.wait()
                 guard let customer = queue.dequeue() else { semaphore.signal(); return }
                 semaphore.signal()
