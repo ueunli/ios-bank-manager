@@ -15,10 +15,6 @@ struct Bank {
     private var depositServiceManager: DepositServiceAsynchronizer
     private var loanServiceManager: LoanServiceAsychronizer
     private var numberOfCustomers: Int = 0 {
-        willSet {
-            guard depositCustomers.isEmpty() && loanCustomers.isEmpty() else { return }
-            self.numberOfCustomers = 0
-        }
         didSet {
             lineUpCustomersInQueue(oldValue + 1 ... numberOfCustomers)
         }
@@ -35,16 +31,17 @@ struct Bank {
         self.timer = Timer()
     }
     
-    
     private func lineUpCustomersInQueue(_ range: ClosedRange<Int>) {
         range.forEach {
             let customer = Customer(number: $0)
-            switch customer.purpose! {
+            guard let purpose = customer.purpose else { return }
+            switch purpose {
             case .deposit(_):
                 depositCustomers.enqueue(customer)
             case .loan(_):
                 loanCustomers.enqueue(customer)
             }
+            
             NotificationCenter.default.post(name: Notification.Name("AddCustomerdInWaitingStackView"), object: nil, userInfo: ["고객": customer])
         }
     }

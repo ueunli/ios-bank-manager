@@ -212,7 +212,6 @@ class ViewController: UIViewController {
         }
     }
 
-    // TODO: customeLabel을 비교할 수 있는 방법이 있을까?..
     @objc private func workStart(_ notification: Notification) {
         DispatchQueue.main.async {
             let customerInfo = notification.userInfo?["고객"]
