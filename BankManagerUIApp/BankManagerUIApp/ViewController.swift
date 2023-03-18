@@ -219,9 +219,9 @@ class ViewController: UIViewController {
             let customer = customerInfo as! Customer
             let label = Customerlabel(customer: customer)
             self.workingCustomersStackView.addArrangedSubview(label)
-            let subview = self.waitingCustomersStackView.arrangedSubviews.first { UIView in
-                let label = UIView as? UILabel
-                return label?.text == customer.data
+            let subview = self.waitingCustomersStackView.arrangedSubviews.first { subView in
+                let label = subView as? Customerlabel
+                return label?.customer == customer
             }
             subview?.removeFromSuperview()
         }
@@ -231,10 +231,9 @@ class ViewController: UIViewController {
         DispatchQueue.main.async {
             let customerInfo = notification.userInfo?["고객"]
             let customer = customerInfo as! Customer
-            let subview = self.workingCustomersStackView.arrangedSubviews.first { UIView in
-                // customerLabel.customer로 비교할 수는 없을까?...
-                let label = UIView as? UILabel
-                return label?.text == customer.data
+            let subview = self.workingCustomersStackView.arrangedSubviews.first { subView in
+                let label = subView as? Customerlabel
+                return label?.customer == customer
             }
             subview?.removeFromSuperview()
         }

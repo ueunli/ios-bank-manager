@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3BC37E2129B9B906002B72A0 /* ConsoleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC37E1129B9B906002B72A0 /* ConsoleManager.swift */; };
 		3BC37E2229B9B906002B72A0 /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC37E1329B9B906002B72A0 /* Customer.swift */; };
 		3BC37E2329B9B906002B72A0 /* BankClerk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC37E1529B9B906002B72A0 /* BankClerk.swift */; };
 		3BC37E2429B9B906002B72A0 /* ServiceAsynchronizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC37E1629B9B906002B72A0 /* ServiceAsynchronizer.swift */; };
@@ -47,7 +46,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		3BC37E1129B9B906002B72A0 /* ConsoleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleManager.swift; sourceTree = "<group>"; };
 		3BC37E1329B9B906002B72A0 /* Customer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		3BC37E1529B9B906002B72A0 /* BankClerk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BankClerk.swift; sourceTree = "<group>"; };
 		3BC37E1629B9B906002B72A0 /* ServiceAsynchronizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceAsynchronizer.swift; sourceTree = "<group>"; };
@@ -100,15 +98,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3BC37E1029B9B906002B72A0 /* Console */ = {
-			isa = PBXGroup;
-			children = (
-				3BC37E1129B9B906002B72A0 /* ConsoleManager.swift */,
-			);
-			name = Console;
-			path = ../BankManagerConsoleApp/BankManagerConsoleApp/Console;
-			sourceTree = "<group>";
-		};
 		3BC37E1229B9B906002B72A0 /* Customer */ = {
 			isa = PBXGroup;
 			children = (
@@ -163,7 +152,6 @@
 			isa = PBXGroup;
 			children = (
 				3BC37E1429B9B906002B72A0 /* Bank */,
-				3BC37E1029B9B906002B72A0 /* Console */,
 				3BC37E1229B9B906002B72A0 /* Customer */,
 				3BC37E1929B9B906002B72A0 /* Data Structure */,
 				3BC37E1D29B9B906002B72A0 /* Extensions */,
@@ -356,7 +344,6 @@
 				3BC37E2829B9B906002B72A0 /* Queue.swift in Sources */,
 				3BC37E2529B9B906002B72A0 /* BankingService.swift in Sources */,
 				3BC37E2229B9B906002B72A0 /* Customer.swift in Sources */,
-				3BC37E2129B9B906002B72A0 /* ConsoleManager.swift in Sources */,
 				3BC37E2429B9B906002B72A0 /* ServiceAsynchronizer.swift in Sources */,
 				3BC37E2B29B9B906002B72A0 /* Timer.swift in Sources */,
 				3BC37E2629B9B906002B72A0 /* Bank.swift in Sources */,
