@@ -7,12 +7,8 @@
 
 import Foundation
 
-final class Customer: Node<String>, Equatable {
+final class Customer: Node<String> {
     let purpose: BankingService?
-    
-    static func == (lhs: Customer, rhs: Customer) -> Bool {
-        return lhs.data == rhs.data
-    }
     
     init(number: Int) {
         let bankServices = BankingService.allCases

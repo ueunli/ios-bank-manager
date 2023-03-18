@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class SinglyLinkedList<Element> {
+final class SinglyLinkedList<Element: Comparable> {
     var head: Node<Element>?
     var tail: Node<Element>?
     private(set) var nodeCount: Int = 0
@@ -43,5 +43,14 @@ final class SinglyLinkedList<Element> {
         head = nil
         tail = nil
         nodeCount = 0
+    }
+    
+    func findNode(_ data: Element) -> Node<Element>? {
+        var node = head
+        while node?.next != nil {
+            if node?.data == data { break }
+            node = node?.next
+        }
+        return node
     }
 }

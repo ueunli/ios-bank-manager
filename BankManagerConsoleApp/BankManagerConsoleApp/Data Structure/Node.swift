@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Node<Element> {
+class Node<Element: Comparable>: Equatable {
     private(set) var data: Element
     private(set) var next: Node?
     var nextNode: Node? {
@@ -21,5 +21,9 @@ class Node<Element> {
     
     init(_ data: Element) {
         self.data = data
+    }
+    
+    static func == (lhs: Node<Element>, rhs: Node<Element>) -> Bool {
+        return lhs.data == rhs.data
     }
 }

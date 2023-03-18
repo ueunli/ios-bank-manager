@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class Queue<Element> {
+final class Queue<Element: Comparable> {
     private(set) var elements = SinglyLinkedList<Element>()
     
     func enqueue(_ node: Node<Element>) {
