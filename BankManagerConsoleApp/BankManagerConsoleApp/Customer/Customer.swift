@@ -7,15 +7,19 @@
 
 import Foundation
 
-final class Customer<Service: ServiceType>: Node<String> {
+final class Customer: Node<String>, Equatable {
     let number: Int
-    let purpose: Service?
+    let purpose: BankingService?
     
     init(number: Int) {
         self.number = number
-        let services = Service.allCases
+        let services = BankingService.allCases
         self.purpose = services.randomElement()
         let data = "\(number) - \(self.purpose?.title ?? "")"
         super.init(data)
+    }
+    
+    static func == (lhs: Customer, rhs: Customer) -> Bool {
+        lhs.number == rhs.number
     }
 }

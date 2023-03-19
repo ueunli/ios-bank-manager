@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B95C17929C5E22600C0D0ED /* Nofication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B95C17829C5E22600C0D0ED /* Nofication.swift */; };
+		3B95C17C29C6DD7E00C0D0ED /* CustomerStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B95C17B29C6DD7E00C0D0ED /* CustomerStackView.swift */; };
 		3BC37E2129B9B906002B72A0 /* ConsoleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC37E1129B9B906002B72A0 /* ConsoleManager.swift */; };
 		3BC37E2229B9B906002B72A0 /* Customer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC37E1329B9B906002B72A0 /* Customer.swift */; };
 		3BC37E2329B9B906002B72A0 /* BankClerk.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC37E1529B9B906002B72A0 /* BankClerk.swift */; };
@@ -47,6 +49,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3B95C17829C5E22600C0D0ED /* Nofication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nofication.swift; sourceTree = "<group>"; };
+		3B95C17B29C6DD7E00C0D0ED /* CustomerStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomerStackView.swift; sourceTree = "<group>"; };
 		3BC37E1129B9B906002B72A0 /* ConsoleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleManager.swift; sourceTree = "<group>"; };
 		3BC37E1329B9B906002B72A0 /* Customer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Customer.swift; sourceTree = "<group>"; };
 		3BC37E1529B9B906002B72A0 /* BankClerk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BankClerk.swift; sourceTree = "<group>"; };
@@ -100,6 +104,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3B95C17A29C6DD5500C0D0ED /* View */ = {
+			isa = PBXGroup;
+			children = (
+				3B95C17B29C6DD7E00C0D0ED /* CustomerStackView.swift */,
+				87FDAA3A29B9C534008A96E8 /* CustomerLabel.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		3BC37E1029B9B906002B72A0 /* Console */ = {
 			isa = PBXGroup;
 			children = (
@@ -145,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				3BC37E1E29B9B906002B72A0 /* ArrayExtension.swift */,
+				3B95C17829C5E22600C0D0ED /* Nofication.swift */,
 			);
 			name = Extensions;
 			path = ../BankManagerConsoleApp/BankManagerConsoleApp/Extensions;
@@ -162,6 +176,7 @@
 		C7694E2E259C3E9F0053667F = {
 			isa = PBXGroup;
 			children = (
+				3B95C17A29C6DD5500C0D0ED /* View */,
 				3BC37E1429B9B906002B72A0 /* Bank */,
 				3BC37E1029B9B906002B72A0 /* Console */,
 				3BC37E1229B9B906002B72A0 /* Customer */,
@@ -189,7 +204,6 @@
 			isa = PBXGroup;
 			children = (
 				C7694E3A259C3E9F0053667F /* AppDelegate.swift */,
-				87FDAA3A29B9C534008A96E8 /* CustomerLabel.swift */,
 				C7694E3C259C3E9F0053667F /* SceneDelegate.swift */,
 				C7694E3E259C3E9F0053667F /* ViewController.swift */,
 				C7694E40259C3E9F0053667F /* Main.storyboard */,
@@ -353,7 +367,9 @@
 				C7694E3F259C3E9F0053667F /* ViewController.swift in Sources */,
 				3BC37E2329B9B906002B72A0 /* BankClerk.swift in Sources */,
 				3BC37E2929B9B906002B72A0 /* Node.swift in Sources */,
+				3B95C17929C5E22600C0D0ED /* Nofication.swift in Sources */,
 				3BC37E2829B9B906002B72A0 /* Queue.swift in Sources */,
+				3B95C17C29C6DD7E00C0D0ED /* CustomerStackView.swift in Sources */,
 				3BC37E2529B9B906002B72A0 /* BankingService.swift in Sources */,
 				3BC37E2229B9B906002B72A0 /* Customer.swift in Sources */,
 				3BC37E2129B9B906002B72A0 /* ConsoleManager.swift in Sources */,

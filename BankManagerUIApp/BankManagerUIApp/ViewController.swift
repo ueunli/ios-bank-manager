@@ -9,8 +9,9 @@ import UIKit
 class ViewController: UIViewController {
     
     private var bank = Bank(clerks: .deposit(2), .loan(1))
-    private var waitingCustomerLabels = [Int: Customerlabel]()
-    private var processingCustomerLabels = [Int: Customerlabel]()
+    //private var waitingCustomerLabels = [Int: Customerlabel]()
+    //private var processingCustomerLabels = [Int: Customerlabel]()
+    private var customerLabels = [Int: Customerlabel]()
     
     private var timerLabel: UILabel = {
         let label = UILabel()
@@ -94,32 +95,34 @@ class ViewController: UIViewController {
     
     private var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.backgroundColor = .white
         scrollView.showsVerticalScrollIndicator = false
         
         return scrollView
     }()
     
-    private var waitingCustomersStackView: UIStackView = {
-        let stackView = UIStackView()
+    private var waitingCustomersStackView: CustomerStackView = {
+        let stackView = CustomerStackView()
         
         stackView.alignment = .fill
         stackView.distribution = .fillEqually
         stackView.spacing = 0
         stackView.axis = .vertical
+        stackView.beObserver(about: .add)
         
         return stackView
     }()
     
-    private var workingCustomersStackView: UIStackView = {
-        let stackView = UIStackView()
+    private var workingCustomersStackView: CustomerStackView = {
+        let stackView = CustomerStackView()
         
         stackView.alignment = .fill
         stackView.distribution = .fillEqually
         stackView.spacing = 0
         stackView.axis = .vertical
-        
+        stackView.beObserver(about: .serve)
+        stackView.beObserver(about: .remove)
+
         return stackView
     }()
     
@@ -127,38 +130,33 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         addSubView()
         configureUI()
-        NotificationCenter.default.addObserver(self, selector: #selector(addCustomerInWaitingStackView), name: Notification.Name("AddCustomerdInWaitingStackView"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(workStart), name: Notification.Name("WorkStart"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(workFinished), name: Notification.Name("WorkFinished"), object: nil)
     }
     
-    @objc func addCustomerInWaitingStackView(_ notification: Notification) {
-        DispatchQueue.main.async {
-            guard let customer = notification.userInfo?["고객"] as? Customer else { return }
-            let label = Customerlabel(customer: customer)
-            self.waitingCustomerLabels.updateValue(label, forKey: customer.number)
-            self.waitingCustomersStackView.addArrangedSubview(label)
-        }
-    }
-    
-    @objc func workStart(_ notification: Notification) {
-        DispatchQueue.main.async {
-            guard let customer = notification.userInfo?["고객"] as? Customer else { return }
-            guard let label = self.waitingCustomerLabels.removeValue(forKey: customer.number) else { return }
-            label.removeFromSuperview()
-            self.processingCustomerLabels.updateValue(label, forKey: customer.number)
-            self.workingCustomersStackView.addArrangedSubview(label)
-        }
-    }
-    
-    @objc func workFinished(_ notification: Notification) {
-        DispatchQueue.main.async {
-            guard let customer = notification.userInfo?["고객"] as? Customer else { return }
-            guard let label = self.processingCustomerLabels.removeValue(forKey: customer.number) else { return }
-            label.textColor = .lightGray
-            workingCustomersStackView.sendSubviewToBack(label)
-        }
-    }
+//    @objc func addCustomerInWaitingStackView(_ notification: Notification) {
+//        DispatchQueue.main.async {
+//            guard let customer = notification.userInfo?["고객"] as? Customer else { return }
+//            let label = Customerlabel(customer: customer)
+//            self.customerLabels.updateValue(label, forKey: customer.number)
+//            self.waitingCustomersStackView.addArrangedSubview(label)
+//        }
+//    }
+//
+//    @objc func workStart(_ notification: Notification) {
+//        DispatchQueue.main.async {
+//            guard let customer = notification.userInfo?["고객"] as? Customer else { return }
+//            guard let label = self.customerLabels[customer.number] else { return }
+//            label.removeFromSuperview()
+//            self.workingCustomersStackView.addArrangedSubview(label)
+//        }
+//    }
+//
+//    @objc func workFinished(_ notification: Notification) {
+//        DispatchQueue.main.async {
+//            guard let customer = notification.userInfo?["고객"] as? Customer else { return }
+//            guard let label = self.customerLabels.removeValue(forKey: customer.number) else { return }
+//            label.removeFromSuperview()
+//        }
+//    }
     
     private func addSubView() {
         view.addSubview(headerStackView)
@@ -214,22 +212,54 @@ class ViewController: UIViewController {
         ])
     }
     
-    // TODO: bank가 일하고 있는 지 확인하여 분기처리 -> 그냥 append VS 작업 시작
     @objc private func addTenCustomersInQueueButtonTapped() {
         //let count = bank.customers.elements.nodeCount
         bank.addMoreCustomers()
     }
     
     @objc private func resetCustomersInQueueButtonTapped() {
-        bank.customers.clear()
-        waitingCustomerLabels.forEach {
-            waitingCustomersStackView.removeArrangedSubview($1)
-            //self.waitingCustomerLabels.removeValue(forKey: $0)
-        }
-        processingCustomerLabels.forEach {
-            workingCustomersStackView.removeArrangedSubview($1)
-            //self.processingCustomerLabels.removeValue(forKey: $0)
-        }
+        bank.removeCustomers()
+//        waitingCustomerLabels.forEach { index, label in
+//            label.removeFromSuperview()
+//            self.waitingCustomerLabels.removeValue(forKey: index)
+//        }
+//        processingCustomerLabels.forEach { index, label in
+//            label.removeFromSuperview()
+//            self.processingCustomerLabels.removeValue(forKey: index)
+//        }
     }
 }
 
+
+
+//extension CustomerStackView {
+//    @objc func addArrangedSubview(notified notification: Notification) {
+//        guard let customer = notification.userInfo?["고객"] as? Customer else { return }
+//        let label = Customerlabel(customer: customer)
+//        self.addArrangedSubview(label)
+//        print(#function)
+//    }
+//
+////    @objc func moveArrangedSubview(notified notification: Notification) {
+////        guard let customer = notification.userInfo?["고객"] as? Customer,
+////              let label = removeCertainSubview(customer) else { return }
+////        self.addArrangedSubview(label)
+////        print(#function)
+////    }
+//
+//    @objc func removeArrangedSubview(notified notification: Notification) {
+//        guard let customer = notification.userInfo?["고객"] as? Customer else { return }
+//        self.removeCustomerLabel(customer)
+//        print(#function)
+//    }
+////
+//////    func addOnlySubview(_ view: UIView) {
+//////        addArrangedSubview(view)
+//////    }
+////
+////    @discardableResult func removeCertainSubview(_ data: Customer) -> Customerlabel? {
+////        guard let label = (self.arrangedSubviews.first { ($0 as? Customerlabel)?.customer == data }) else { return nil }
+////        self.removeArrangedSubview(label)
+////        return label as? Customerlabel
+////    }
+//}

@@ -7,15 +7,15 @@
 
 import Foundation
 
-//protocol BankClerkProtocol: ServerType {
-//    var isWorking: Bool { get set }
-//    var service: BankingService { get }
-//    func serve(_ customer: Customer<BankingService>)
-//    init(service: BankingService)
-//}
+protocol BankClerkProtocol: AnyObject {
+    var isWorking: Bool { get set }
+    var service: BankingService { get }
+    func serve(_ customer: Customer)
+    init(service: BankingService)
+}
 
-extension ServerType where Service == BankingService {
-    func serve(_ customer: Customer<Service>) {
+extension BankClerkProtocol {
+    func serve(_ customer: Customer) {
         self.isWorking = true
         guard let purposeOfVisit = customer.purpose else { return }
         Thread.sleep(forTimeInterval: purposeOfVisit.timeSpent)
@@ -23,7 +23,7 @@ extension ServerType where Service == BankingService {
     }
 }
 
-class BankClerk: ServerType {
+class BankClerk: BankClerkProtocol {
     typealias Service = BankingService
     var isWorking = Bool()  //MARK: 기본값 false
     var service: BankingService
@@ -32,28 +32,3 @@ class BankClerk: ServerType {
         self.service = service
     }
 }
-
-//class BankClerk: BankClerkProtocol {
-//    var isWorking = Bool()  //MARK: 기본값 false
-//    var service: BankingService
-//
-//    required init(service: BankingService) {
-//        self.service = service
-//    }
-//}
-
-//class BankClerk: ServerType {
-//    var isWorking = Bool()
-//    var service: BankingService
-//
-//    init(service: BankingService) {
-//        self.service = service
-//    }
-//
-//    func serve(_ customer: Customer<BankingService>) {
-//        self.isWorking = true
-//        guard let purposeOfVisit = customer.purpose else { return }
-//        Thread.sleep(forTimeInterval: purposeOfVisit.timeSpent)
-//        self.isWorking = false
-//    }
-//}

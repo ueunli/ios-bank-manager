@@ -8,9 +8,9 @@
 import UIKit
 
 class Customerlabel: UILabel {
-    var customer: Customer<ServiceType>
+    var customer: Customer
     
-    init(customer: Customer<ServiceType>) {
+    init(customer: Customer) {
         self.customer = customer
         super.init(frame: .zero)
         setUp()

@@ -7,51 +7,61 @@
 
 import Foundation
 
-struct ServiceAsynchronizer<Service: ServiceType, Server: ServerType> {
-    private var queues = [Service: Queue<String>]()
-    private var group = DispatchGroup()
+class ServiceAsynchronizer {
+    static let shared = ServiceAsynchronizer()
+    //private(set) var powered: Bool { queues.values.allSatisfy { $0.isEmpty() } }
+    private let group = DispatchGroup()
+    private var queues = [BankingService: Queue<String>]()
     private let thread = DispatchQueue.global()
-    private let semaphore: DispatchSemaphore
+    private var semaphore = [BankingService: DispatchSemaphore]()
     
-    init(queue: Queue<String>, semaphoreValue: Int = 1) {
-        self.semaphore = DispatchSemaphore(value: semaphoreValue)
-        setServiceType()
-        while !queue.isEmpty() {
-            guard let customer = queue.dequeue() as? Customer<Service> else { continue }
-            guard let service = customer.purpose else { return }
-            queues[service]?.enqueue(customer)
+    private init(semaphoreValue: Int = 1) {
+        //setServiceType()
+        let serviceTypes = BankingService.allCases
+        serviceTypes.forEach { self.queues.updateValue(Queue<String>(), forKey: $0) }
+        serviceTypes.forEach { self.semaphore.updateValue(DispatchSemaphore(value: semaphoreValue), forKey: $0) }
+    }
+    
+    private func setServiceType() {
+        let serviceTypes = BankingService.allCases
+        serviceTypes.forEach { self.queues.updateValue(Queue<String>(), forKey: $0) }
+        serviceTypes.forEach { self.semaphore.updateValue(DispatchSemaphore(value: 1), forKey: $0) }
+    }
+    
+    func addServices(for customers: Queue<String>) {
+        while !customers.isEmpty() {
+            guard let customer = customers.dequeue() as? Customer else { continue }
+            addService(for: customer)
         }
     }
     
-    private mutating func setServiceType() {
-        let serviceTypes = Service.allCases
-        serviceTypes.forEach { self.queues.updateValue(Queue<String>(), forKey: $0) }
+    func addService(for customer: Customer) {
+        guard let service = customer.purpose else { return }
+        queues[service]?.enqueue(customer)
     }
     
-    func work(by workers: [Server]) {
+    func work(by workers: [BankClerk]) {
         let workItems = workers.map(makeWorkItem)
         workItems.forEach {
-            thread.async(execute: $0)
+            thread.async(group: group, execute: $0)
         }
     }
     
-    private func makeWorkItem(by worker: Server) -> DispatchWorkItem {
-        let workItem = DispatchWorkItem {
-            guard let service = worker.service as? Service else { return }
-            guard let queue = queues[service] else { return }
+    private func makeWorkItem(by worker: BankClerk) -> DispatchWorkItem {
+        let workItem = DispatchWorkItem { [self] in
+            guard let queue = queues[worker.service],
+                  let semaphore = semaphore[worker.service] else { return }
             
             while !queue.isEmpty() {
                 guard !worker.isWorking else { continue }
                 
                 semaphore.wait()
-                guard let customer = queue.dequeue() as? Customer<Service> else { semaphore.signal(); return }
+                guard let customer = queue.dequeue() as? Customer else { semaphore.signal(); return }
                 semaphore.signal()
                 
-                NotificationCenter.default.post(name: Notification.Name("WorkStart"), object: nil, userInfo: ["고객": customer])
-                worker.isWorking = true
+                NotificationCenter.default.post(.serve, about: customer)
                 worker.serve(customer)
-                worker.isWorking = false
-                NotificationCenter.default.post(name: Notification.Name("WorkFinished"), object: nil, userInfo: ["고객": customer])
+                NotificationCenter.default.post(.remove, about: customer)
             }
         }
         return workItem
